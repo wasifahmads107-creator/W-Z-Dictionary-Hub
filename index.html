@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>W-Z Translation Hub</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="phone">
+
+  <!-- ================= HOME ================= -->
+  <section class="screen active" id="screen-home" data-theme="home">
+    <header class="topbar topbar--home">
+      <button class="icon-btn" onclick="toggleMenu()">☰</button>
+      <div class="brand">
+        <h1>W-Z Dictionary Hub</h1>
+        <p>All Languages • Offline • Smart • Easy</p>
+      </div>
+      <span class="crown">👑</span>
+    </header>
+
+    <div class="search-row">
+      <span class="search-ico">🔍</span>
+      <input type="text" id="home-search" placeholder="Search words, sentences..." onkeydown="if(event.key==='Enter')homeSearch()">
+      <button class="mic-btn" onclick="fakeMic('home-search')">🎙</button>
+    </div>
+
+    <div class="grid-6">
+      <button class="tile tile--blue" onclick="showScreen('dictionary')">
+        <span class="tile-icon">📘</span>
+        <span class="tile-title">Dictionary</span>
+        <span class="tile-sub">Word Meanings</span>
+      </button>
+      <button class="tile tile--green" onclick="showScreen('translator')">
+        <span class="tile-icon">💬</span>
+        <span class="tile-title">Translator</span>
+        <span class="tile-sub">Language to Language</span>
+      </button>
+      <button class="tile tile--purple" onclick="showScreen('sentence')">
+        <span class="tile-icon">🗨️</span>
+        <span class="tile-title">Sentence Translator</span>
+        <span class="tile-sub">Translate Sentences</span>
+      </button>
+      <button class="tile tile--orange" onclick="showScreen('grammar-en')">
+        <span class="tile-icon">Aa</span>
+        <span class="tile-title">English Grammar</span>
+        <span class="tile-sub">Learn & Practice</span>
+      </button>
+      <button class="tile tile--teal" onclick="showScreen('grammar-ur')">
+        <span class="tile-icon">اردو</span>
+        <span class="tile-title">Urdu Grammar</span>
+        <span class="tile-sub">Learn & Practice</span>
+      </button>
+      <button class="tile tile--pink" onclick="showScreen('favourite')">
+        <span class="tile-icon">❤️</span>
+        <span class="tile-title">Favourite</span>
+        <span class="tile-sub">Saved Words & Sentences</span>
+      </button>
+    </div>
+
+    <div class="section-head">
+      <h3>Recent Searches</h3>
+      <a href="#" onclick="showScreen('history');return false;">See All</a>
+    </div>
+    <div class="list" id="home-recent-list"></div>
+
+    <nav class="bottom-nav" data-active-theme="home">
+      <button onclick="showScreen('home')" class="nav-item active"><span>🏠</span>Home</button>
+      <button onclick="showScreen('history')" class="nav-item"><span>🕒</span>History</button>
+      <button onclick="openQuickLaunch()" class="nav-item nav-item--center"><span class="center-dot">✦</span></button>
+      <button onclick="showScreen('favourite')" class="nav-item"><span>♡</span>Favourite</button>
+      <button onclick="showScreen('profile')" class="nav-item"><span>👤</span>Profile</button>
+    </nav>
+  </section>
+
+  <!-- ================= DICTIONARY ================= -->
+  <section class="screen" id="screen-dictionary" data-theme="blue">
+    <header class="topbar topbar--color">
+      <button class="icon-btn" onclick="showScreen('home')">←</button>
+      <h2>Dictionary</h2>
+      <button class="icon-btn" onclick="toggleFav('dict-current')">♡</button>
+    </header>
+
+    <div class="search-row search-row--card">
+      <span class="search-ico">🔍</span>
+      <input type="text" id="dict-search" value="Knowledge" placeholder="Search a word" onkeydown="if(event.key==='Enter')lookupWord()">
+      <button class="clear-btn" onclick="document.getElementById('dict-search').value=''">✕</button>
+      <button class="mic-btn" onclick="fakeMic('dict-search')">🎙</button>
+    </div>
+
+    <div class="lang-row">
+      <button class="lang-pill" id="dict-lang-from">🇬🇧 English</button>
+      <button class="swap-btn" onclick="swapDictLang()">⇄</button>
+      <button class="lang-pill" id="dict-lang-to">🇵🇰 Urdu</button>
+    </div>
+
+    <div class="card" id="dict-result"></div>
+
+    <nav class="bottom-nav" data-active-theme="blue">
+      <button onclick="showScreen('home')" class="nav-item"><span>🏠</span>Home</button>
+      <button onclick="showScreen('history')" class="nav-item"><span>🕒</span>History</button>
+      <button onclick="openQuickLaunch()" class="nav-item nav-item--center"><span class="center-dot">✦</span></button>
+      <button onclick="showScreen('favourite')" class="nav-item"><span>♡</span>Favourite</button>
+      <button onclick="showScreen('profile')" class="nav-item"><span>👤</span>Profile</button>
+    </nav>
+  </section>
+
+  <!-- ================= TRANSLATOR ================= -->
+  <section class="screen" id="screen-translator" data-theme="green">
+    <header class="topbar topbar--color">
+      <button class="icon-btn" onclick="showScreen('home')">←</button>
+      <h2>Translator</h2>
+      <button class="icon-btn" onclick="showScreen('history')">🕒</button>
+    </header>
+
+    <div class="content-pad">
+      <label class="field-label">From</label>
+      <button class="lang-pill lang-pill--full" id="tr-lang-from" onclick="cycleLang('tr-lang-from')">🇬🇧 English</button>
+
+      <div class="text-box">
+        <textarea id="tr-input" placeholder="Type something to translate...">Good morning
+How are you?</textarea>
+        <div class="text-box-actions">
+          <button onclick="document.getElementById('tr-input').value=''">✕</button>
+          <button onclick="speak(document.getElementById('tr-input').value,'en-US')">🔊</button>
+          <button onclick="copyText('tr-input')">📋</button>
+        </div>
+      </div>
+
+      <label class="field-label">To</label>
+      <button class="swap-center" onclick="swapTranslator()">⇄</button>
+      <button class="lang-pill lang-pill--full" id="tr-lang-to" onclick="cycleLang('tr-lang-to')">🇵🇰 Urdu</button>
+
+      <div class="text-box text-box--result" dir="rtl" id="tr-output-box">
+        <div id="tr-output" class="urdu">صبح بخیر
+آپ کیسے ہیں؟</div>
+        <div class="text-box-actions">
+          <button onclick="speak(document.getElementById('tr-output').innerText,'ur-PK')">🔊</button>
+          <button onclick="copyText('tr-output')">📋</button>
+        </div>
+      </div>
+
+      <button class="btn-primary btn--green" onclick="doTranslate()">Translate</button>
+
+      <div class="section-head">
+        <h3>Recent Translations</h3>
+        <a href="#" onclick="showScreen('history');return false;">See All</a>
+      </div>
+      <div class="list list--rows" id="tr-recent-list"></div>
+    </div>
+
+    <nav class="bottom-nav" data-active-theme="green">
+      <button onclick="showScreen('home')" class="nav-item"><span>🏠</span>Home</button>
+      <button onclick="showScreen('history')" class="nav-item"><span>🕒</span>History</button>
+      <button onclick="openQuickLaunch()" class="nav-item nav-item--center"><span class="center-dot">✦</span></button>
+      <button onclick="showScreen('favourite')" class="nav-item"><span>♡</span>Favourite</button>
+      <button onclick="showScreen('profile')" class="nav-item"><span>👤</span>Profile</button>
+    </nav>
+  </section>
+
+  <!-- ================= SENTENCE TRANSLATOR ================= -->
+  <section class="screen" id="screen-sentence" data-theme="purple">
+    <header class="topbar topbar--color">
+      <button class="icon-btn" onclick="showScreen('home')">←</button>
+      <h2>Sentence Translator</h2>
+      <button class="icon-btn" onclick="showScreen('history')">🕒</button>
+    </header>
+
+    <div class="content-pad">
+      <label class="field-label">From</label>
+      <button class="lang-pill lang-pill--full" id="sen-lang-from" onclick="cycleLang('sen-lang-from')">🇬🇧 English</button>
+
+      <div class="text-box">
+        <textarea id="sen-input" placeholder="Type a sentence...">Education is the key to success.</textarea>
+        <div class="text-box-actions">
+          <button onclick="document.getElementById('sen-input').value=''">✕</button>
+          <button onclick="speak(document.getElementById('sen-input').value,'en-US')">🎙</button>
+          <button onclick="speak(document.getElementById('sen-input').value,'en-US')">🔊</button>
+        </div>
+      </div>
+
+      <label class="field-label">To</label>
+      <button class="swap-center" onclick="swapSentence()">⇄</button>
+      <button class="lang-pill lang-pill--full" id="sen-lang-to" onclick="cycleLang('sen-lang-to')">🇵🇰 Urdu</button>
+
+      <div class="text-box text-box--result" dir="rtl" id="sen-output-box">
+        <div id="sen-output" class="urdu">تعلیم کامیابی کی کنجی ہے۔</div>
+        <div class="text-box-actions">
+          <button onclick="speak(document.getElementById('sen-output').innerText,'ur-PK')">🔊</button>
+          <button onclick="copyText('sen-output')">📋</button>
+        </div>
+      </div>
+
+      <button class="btn-primary btn--purple" onclick="doSentenceTranslate()">Translate</button>
+
+      <div class="section-head">
+        <h3>Recent Translations</h3>
+        <a href="#" onclick="showScreen('history');return false;">See All</a>
+      </div>
+      <div class="list list--rows" id="sen-recent-list"></div>
+    </div>
+
+    <nav class="bottom-nav" data-active-theme="purple">
+      <button onclick="showScreen('home')" class="nav-item"><span>🏠</span>Home</button>
+      <button onclick="showScreen('history')" class="nav-item"><span>🕒</span>History</button>
+      <button onclick="openQuickLaunch()" class="nav-item nav-item--center"><span class="center-dot">✦</span></button>
+      <button onclick="showScreen('favourite')" class="nav-item"><span>♡</span>Favourite</button>
+      <button onclick="showScreen('profile')" class="nav-item"><span>👤</span>Profile</button>
+    </nav>
+  </section>
+
+  <!-- ================= ENGLISH GRAMMAR ================= -->
+  <section class="screen" id="screen-grammar-en" data-theme="orange">
+    <header class="topbar topbar--color">
+      <button class="icon-btn" onclick="showScreen('home')">←</button>
+      <h2>English Grammar</h2>
+      <button class="icon-btn" onclick="showScreen('history')">🕒</button>
+    </header>
+
+    <div class="content-pad">
+      <div class="search-row search-row--flat">
+        <input type="text" id="gren-search" placeholder="Search grammar topics...">
+        <span class="search-ico">🔍</span>
+      </div>
+
+      <h3 class="cat-title">Categories</h3>
+      <div class="cat-grid">
+        <button class="cat-chip" onclick="openGrammarTopic('en','Tenses')"><span>⏰</span>Tenses</button>
+        <button class="cat-chip" onclick="openGrammarTopic('en','Parts of Speech')"><span>📝</span>Parts of Speech</button>
+        <button class="cat-chip" onclick="openGrammarTopic('en','Articles')"><span>Aa</span>Articles</button>
+        <button class="cat-chip" onclick="openGrammarTopic('en','Prepositions')"><span>🧭</span>Prepositions</button>
+        <button class="cat-chip" onclick="openGrammarTopic('en','Conjunctions')"><span>🔗</span>Conjunctions</button>
+        <button class="cat-chip" onclick="openGrammarTopic('en','Active & Passive')"><span>🔄</span>Active & Passive</button>
+        <button class="cat-chip" onclick="openGrammarTopic('en','Direct & Indirect')"><span>🗯️</span>Direct & Indirect</button>
+        <button class="cat-chip" onclick="openGrammarTopic('en','Voice')"><span>🎙️</span>Voice</button>
+        <button class="cat-chip" onclick="openGrammarTopic('en','Narration')"><span>📖</span>Narration</button>
+      </div>
+
+      <div class="section-head">
+        <h3>Popular Topics</h3>
+        <a href="#" onclick="return false;">See All</a>
+      </div>
+      <div class="list list--topics" id="gren-popular"></div>
+    </div>
+
+    <nav class="bottom-nav" data-active-theme="orange">
+      <button onclick="showScreen('home')" class="nav-item"><span>🏠</span>Home</button>
+      <button onclick="showScreen('history')" class="nav-item"><span>🕒</span>History</button>
+      <button onclick="openQuickLaunch()" class="nav-item nav-item--center"><span class="center-dot">✦</span></button>
+      <button onclick="showScreen('favourite')" class="nav-item"><span>♡</span>Favourite</button>
+      <button onclick="showScreen('profile')" class="nav-item"><span>👤</span>Profile</button>
+    </nav>
+  </section>
+
+  <!-- ================= URDU GRAMMAR ================= -->
+  <section class="screen" id="screen-grammar-ur" data-theme="teal">
+    <header class="topbar topbar--color">
+      <button class="icon-btn" onclick="showScreen('home')">←</button>
+      <h2 dir="rtl">اردو گرامر</h2>
+      <button class="icon-btn" onclick="showScreen('history')">🕒</button>
+    </header>
+
+    <div class="content-pad" dir="rtl">
+      <div class="search-row search-row--flat">
+        <span class="search-ico">🔍</span>
+        <input type="text" id="grur-search" placeholder="گرامر کے موضوعات تلاش کریں...">
+      </div>
+
+      <h3 class="cat-title">اقسام</h3>
+      <div class="cat-grid">
+        <button class="cat-chip" onclick="openGrammarTopic('ur','اسم')"><span>📗</span>اسم</button>
+        <button class="cat-chip" onclick="openGrammarTopic('ur','صفت')"><span>🌟</span>صفت</button>
+        <button class="cat-chip" onclick="openGrammarTopic('ur','فعل')"><span>⚡</span>فعل</button>
+        <button class="cat-chip" onclick="openGrammarTopic('ur','ضمائر')"><span>🔤</span>ضمائر</button>
+        <button class="cat-chip" onclick="openGrammarTopic('ur','حروف')"><span>🔠</span>حروف</button>
+        <button class="cat-chip" onclick="openGrammarTopic('ur','اسم اشارہ')"><span>👉</span>اسم اشارہ</button>
+        <button class="cat-chip" onclick="openGrammarTopic('ur','تراکیب')"><span>🧩</span>تراکیب</button>
+        <button class="cat-chip" onclick="openGrammarTopic('ur','املا و قواعد')"><span>🖊️</span>املا و قواعد</button>
+      </div>
+
+      <div class="section-head">
+        <h3>مشہور موضوعات</h3>
+        <a href="#" onclick="return false;">سب دیکھیں</a>
+      </div>
+      <div class="list list--topics" id="grur-popular"></div>
+    </div>
+
+    <nav class="bottom-nav" data-active-theme="teal">
+      <button onclick="showScreen('home')" class="nav-item"><span>🏠</span>Home</button>
+      <button onclick="showScreen('history')" class="nav-item"><span>🕒</span>History</button>
+      <button onclick="openQuickLaunch()" class="nav-item nav-item--center"><span class="center-dot">✦</span></button>
+      <button onclick="showScreen('favourite')" class="nav-item"><span>♡</span>Favourite</button>
+      <button onclick="showScreen('profile')" class="nav-item"><span>👤</span>Profile</button>
+    </nav>
+  </section>
+
+  <!-- ================= FAVOURITE ================= -->
+  <section class="screen" id="screen-favourite" data-theme="pink">
+    <header class="topbar topbar--color">
+      <button class="icon-btn" onclick="showScreen('home')">←</button>
+      <h2>Favourite</h2>
+      <span class="icon-btn">❤️</span>
+    </header>
+    <div class="content-pad">
+      <div class="tabs">
+        <button class="tab active" onclick="filterFav('all',this)">All</button>
+        <button class="tab" onclick="filterFav('word',this)">Words</button>
+        <button class="tab" onclick="filterFav('sentence',this)">Sentences</button>
+      </div>
+      <div class="list list--rows" id="fav-list"></div>
+      <p class="empty-hint" id="fav-empty" style="display:none">No favourites yet. Tap the ♡ icon anywhere to save words and sentences here.</p>
+    </div>
+    <nav class="bottom-nav" data-active-theme="pink">
+      <button onclick="showScreen('home')" class="nav-item"><span>🏠</span>Home</button>
+      <button onclick="showScreen('history')" class="nav-item"><span>🕒</span>History</button>
+      <button onclick="openQuickLaunch()" class="nav-item nav-item--center"><span class="center-dot">✦</span></button>
+      <button onclick="showScreen('favourite')" class="nav-item active"><span>♡</span>Favourite</button>
+      <button onclick="showScreen('profile')" class="nav-item"><span>👤</span>Profile</button>
+    </nav>
+  </section>
+
+  <!-- ================= HISTORY ================= -->
+  <section class="screen" id="screen-history" data-theme="home">
+    <header class="topbar topbar--color topbar--dark">
+      <button class="icon-btn" onclick="showScreen('home')">←</button>
+      <h2>History</h2>
+      <button class="icon-btn" onclick="clearHistory()">🗑</button>
+    </header>
+    <div class="content-pad">
+      <div class="list list--rows" id="history-list"></div>
+      <p class="empty-hint" id="history-empty" style="display:none">No history yet. Everything you search or translate will show up here.</p>
+    </div>
+    <nav class="bottom-nav" data-active-theme="home">
+      <button onclick="showScreen('home')" class="nav-item"><span>🏠</span>Home</button>
+      <button onclick="showScreen('history')" class="nav-item active"><span>🕒</span>History</button>
+      <button onclick="openQuickLaunch()" class="nav-item nav-item--center"><span class="center-dot">✦</span></button>
+      <button onclick="showScreen('favourite')" class="nav-item"><span>♡</span>Favourite</button>
+      <button onclick="showScreen('profile')" class="nav-item"><span>👤</span>Profile</button>
+    </nav>
+  </section>
+
+  <!-- ================= PROFILE ================= -->
+  <section class="screen" id="screen-profile" data-theme="home">
+    <header class="topbar topbar--color topbar--dark">
+      <button class="icon-btn" onclick="showScreen('home')">←</button>
+      <h2>Profile</h2>
+      <span class="icon-btn">⚙️</span>
+    </header>
+    <div class="content-pad">
+      <div class="profile-card">
+        <div class="avatar">👤</div>
+        <h3 id="profile-name">Guest User</h3>
+        <p>Offline mode • Free plan</p>
+      </div>
+      <div class="stats-row">
+        <div class="stat"><b id="stat-history">0</b><span>Searches</span></div>
+        <div class="stat"><b id="stat-fav">0</b><span>Favourites</span></div>
+        <div class="stat"><b>7</b><span>Languages</span></div>
+      </div>
+      <div class="menu-list">
+        <button class="menu-row" onclick="alert('W-Z Dictionary Hub v1.0 — 100% Offline')">ℹ️ About the App</button>
+        <button class="menu-row" onclick="alert('All words, translations and grammar packs are stored on this device. No internet required.')">📦 Offline Packs</button>
+        <button class="menu-row" onclick="toggleTheme()">🌗 Dark / Light Mode</button>
+        <button class="menu-row" onclick="clearHistory()">🗑 Clear History</button>
+        <button class="menu-row" onclick="clearFavourites()">💔 Clear Favourites</button>
+      </div>
+    </div>
+    <nav class="bottom-nav" data-active-theme="home">
+      <button onclick="showScreen('home')" class="nav-item"><span>🏠</span>Home</button>
+      <button onclick="showScreen('history')" class="nav-item"><span>🕒</span>History</button>
+      <button onclick="openQuickLaunch()" class="nav-item nav-item--center"><span class="center-dot">✦</span></button>
+      <button onclick="showScreen('favourite')" class="nav-item"><span>♡</span>Favourite</button>
+      <button onclick="showScreen('profile')" class="nav-item active"><span>👤</span>Profile</button>
+    </nav>
+  </section>
+
+</div>
+
+<!-- ================= OVERLAYS ================= -->
+<div class="overlay" id="quick-launch-overlay" onclick="closeOverlayBg(event)">
+  <div class="quick-launch-sheet">
+    <div class="sheet-handle"></div>
+    <h3>Quick Launch</h3>
+    <div class="grid-6 grid-6--sheet">
+      <button class="tile tile--blue tile--sm" onclick="showScreen('dictionary')">📘<span>Dictionary</span></button>
+      <button class="tile tile--green tile--sm" onclick="showScreen('translator')">💬<span>Translator</span></button>
+      <button class="tile tile--purple tile--sm" onclick="showScreen('sentence')">🗨️<span>Sentence</span></button>
+      <button class="tile tile--orange tile--sm" onclick="showScreen('grammar-en')">Aa<span>Eng. Grammar</span></button>
+      <button class="tile tile--teal tile--sm" onclick="showScreen('grammar-ur')">اردو<span>Urdu Grammar</span></button>
+      <button class="tile tile--pink tile--sm" onclick="showScreen('favourite')">❤️<span>Favourite</span></button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="topic-overlay" onclick="closeOverlayBg(event)">
+  <div class="quick-launch-sheet" id="topic-sheet">
+    <div class="sheet-handle"></div>
+    <h3 id="topic-title">Topic</h3>
+    <div id="topic-body" class="topic-body"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="script.js"></script>
+</body>
+</html>
