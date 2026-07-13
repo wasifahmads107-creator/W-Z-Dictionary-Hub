@@ -311,23 +311,29 @@ function openGrammarTopic(lang, topic){
 function renderGrammarPopular(){
   const el = document.getElementById("gren-popular");
   const topics = [
-    ["Present Simple Tense","Structure, Use & Examples"],
-    ["Past Continuous Tense","Structure, Use & Examples"],
-    ["Articles (A, An, The)","Rules & Examples"]
+    ["Present Simple Tense","Structure, Use & Examples","#FFEDEA","#FF6B4A","⏰"],
+    ["Past Continuous Tense","Structure, Use & Examples","#E6FBF5","#12B886","⏳"],
+    ["Articles (A, An, The)","Rules & Examples","#EEECFF","#6C5CE7","Aa"]
   ];
   el.innerHTML = topics.map(t=>`
     <div class="row-item" onclick="openGrammarTopic('en','${t[0].split(' (')[0]}')">
-      <div class="ri-main"><b>${t[0]}</b><span>${t[1]}</span></div>
+      <span class="icon-badge" style="background:${t[2]};color:${t[3]}">${t[4]}</span>
+      <div class="ri-main" style="flex:1"><b>${t[0]}</b><span>${t[1]}</span></div>
       <div class="ri-right">›</div>
     </div>`).join("");
 }
 function renderGrammarPopularUr(){
   const el = document.getElementById("grur-popular");
-  const topics = [["اسم کی اقسام","تعریف اور مثالیں"],["فعل کی اقسام","تعریف اور مثالیں"],["حروف کی اقسام","تعریف اور مثالیں"]];
+  const topics = [
+    ["اسم کی اقسام","تعریف اور مثالیں","#E6FBF5","#12B886","📗"],
+    ["فعل کی اقسام","تعریف اور مثالیں","#E6FBF5","#0FA898","⚡"],
+    ["حروف کی اقسام","تعریف اور مثالیں","#EEECFF","#6C5CE7","🔠"]
+  ];
   el.innerHTML = topics.map(t=>`
     <div class="row-item" onclick="openGrammarTopic('ur','${t[0].replace('کی اقسام','')}')">
-      <div class="ri-main"><b>${t[0]}</b><span>${t[1]}</span></div>
       <div class="ri-right">‹</div>
+      <div class="ri-main" style="flex:1"><b>${t[0]}</b><span>${t[1]}</span></div>
+      <span class="icon-badge" style="background:${t[2]};color:${t[3]}">${t[4]}</span>
     </div>`).join("");
 }
 
