@@ -187,9 +187,9 @@ function fakeMic(inputId){
 /* ---------------- DICTIONARY SCREEN ---------------- */
 function normalize(s){ return (s||"").trim().toLowerCase(); }
 
-function lookupWord(){
+async function lookupWord(){
   const q = normalize(document.getElementById("dict-search").value);
-  renderDictResult(q);
+  await renderDictResult(q);
 }
 
 function swapDictLang(){
@@ -198,28 +198,48 @@ function swapDictLang(){
   const tmp = a.textContent; a.textContent = b.textContent; b.textContent = tmp;
 }
 
-function renderDictResult(query){
+async function renderDictResult(query){
   const box = document.getElementById("dict-result");
-  const entry = DICTIONARY[query];
-  if(!entry){
-    box.innerHTML = `<div class="no-result">No offline entry found for "<b>${escapeHtml(query||'')}</b>".<br>Try: knowledge, education, love, time, water, book, friend.</div>`;
+  if(!query){
+    box.innerHTML = `<div class="no-result">Type a word above to look it up.</div>`;
     return;
   }
-  addHistory("word", entry.word, entry.ur);
-  box.innerHTML = `
-    <h2>${entry.word} <button class="speaker" onclick="speak('${entry.word}','en-US')">🔊</button></h2>
-    <div class="ipa">${entry.ipa}</div>
-    <div class="pos">${entry.pos}</div>
-    <div class="definition">${entry.definition}</div>
-    <div class="ur-line">${entry.ur} <button class="speaker" onclick="speak('${entry.ur}','ur-PK')">🔊</button></div>
-    <h4>Examples</h4>
-    ${entry.examples.map(ex=>`
-      <div class="example-item">• ${ex.en}
-        <div class="ex-ur">${ex.ur}</div>
-      </div>`).join("")}
-    <h4>Synonyms</h4>
-    <div class="chips">${entry.synonyms.map(s=>`<button class="chip" onclick="document.getElementById('dict-search').value='${s}';lookupWord()">${s}</button>`).join("")}</div>
-  `;
+  const entry = DICTIONARY[query];
+  if(entry){
+    addHistory("word", entry.word, entry.ur);
+    box.innerHTML = `
+      <h2>${entry.word} <button class="speaker" onclick="speak('${entry.word}','en-US')">🔊</button></h2>
+      <div class="ipa">${entry.ipa}</div>
+      <div class="pos">${entry.pos}</div>
+      <div class="definition">${entry.definition}</div>
+      <div class="ur-line">${entry.ur} <button class="speaker" onclick="speak('${entry.ur}','ur-PK')">🔊</button></div>
+      <h4>Examples</h4>
+      ${entry.examples.map(ex=>`
+        <div class="example-item">• ${ex.en}
+          <div class="ex-ur">${ex.ur}</div>
+        </div>`).join("")}
+      <h4>Synonyms</h4>
+      <div class="chips">${entry.synonyms.map(s=>`<button class="chip" onclick="document.getElementById('dict-search').value='${s}';lookupWord()">${s}</button>`).join("")}</div>
+    `;
+    return;
+  }
+
+  // Not in the small offline word list — try a live translation as a
+  // best-effort result (needs internet). This keeps the app useful for
+  // words beyond the built-in offline set.
+  box.innerHTML = `<div class="no-result">Looking up "${escapeHtml(query)}"...</div>`;
+  const translated = await translateOnline(query, "en", "ur");
+  if(translated){
+    addHistory("word", query, translated);
+    box.innerHTML = `
+      <h2>${escapeHtml(query)} <button class="speaker" onclick="speak('${escapeHtml(query)}','en-US')">🔊</button></h2>
+      <div class="ipa">Live translation (not in offline word list)</div>
+      <div class="ur-line">${translated} <button class="speaker" onclick="speak('${translated}','ur-PK')">🔊</button></div>
+      <div class="no-result" style="padding:12px 0 0;text-align:left">Full definitions, examples and synonyms are only available for the offline word set: knowledge, education, love, time, water, book, friend.</div>
+    `;
+  } else {
+    box.innerHTML = `<div class="no-result">No offline entry found for "<b>${escapeHtml(query)}</b>" and no internet connection to fetch a live translation.<br>Try: knowledge, education, love, time, water, book, friend.</div>`;
+  }
 }
 
 function escapeHtml(str){
@@ -228,6 +248,9 @@ function escapeHtml(str){
 
 /* ---------------- TRANSLATOR SCREEN ---------------- */
 const LANGS = ["🇬🇧 English","🇵🇰 Urdu","🇸🇦 Arabic","🇪🇸 Spanish","🇫🇷 French"];
+const LANG_CODES = {
+  "🇬🇧 English":"en", "🇵🇰 Urdu":"ur", "🇸🇦 Arabic":"ar", "🇪🇸 Spanish":"es", "🇫🇷 French":"fr"
+};
 function cycleLang(id){
   const el = document.getElementById(id);
   let idx = LANGS.indexOf(el.textContent);
@@ -242,21 +265,54 @@ function swapTranslator(){
   const out = document.getElementById("tr-output");
   const tmp2 = inp.value; inp.value = out.innerText; out.innerText = tmp2;
 }
-function doTranslate(){
-  const input = document.getElementById("tr-input").value.trim();
+
+/* Live translation using the free MyMemory API — works whenever the device
+   is online. Falls back to the small offline phrase bank when there is no
+   internet connection (e.g. api call fails/times out). */
+async function translateOnline(text, fromCode, toCode){
+  try{
+    const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${fromCode}|${toCode}`;
+    const res = await fetch(url);
+    const data = await res.json();
+    if(data && data.responseData && data.responseData.translatedText){
+      return data.responseData.translatedText;
+    }
+  }catch(e){
+    return null; // no internet or request blocked
+  }
+  return null;
+}
+
+async function doTranslate(){
+  const inputEl = document.getElementById("tr-input");
+  const outputEl = document.getElementById("tr-output");
+  const input = inputEl.value.trim();
+  if(!input){ showToast("Type something first"); return; }
   const lines = input.split("\n").map(l=>l.trim()).filter(Boolean);
-  const outputs = lines.map(line=>{
+  const fromCode = LANG_CODES[document.getElementById("tr-lang-from").textContent] || "en";
+  const toCode = LANG_CODES[document.getElementById("tr-lang-to").textContent] || "ur";
+
+  outputEl.innerText = "Translating...";
+  const outputs = [];
+  for(const line of lines){
     const key = normalize(line).replace(/[.?!]+$/,"");
-    return PHRASES_EN_UR[key] || PHRASES_EN_UR[normalize(line)] || wordByWordTranslate(line);
-  });
-  document.getElementById("tr-output").innerText = outputs.join("\n");
+    let result = (fromCode==="en" && toCode==="ur") ? (PHRASES_EN_UR[key] || PHRASES_EN_UR[normalize(line)]) : null;
+    if(!result) result = await translateOnline(line, fromCode, toCode);
+    if(!result) result = wordByWordTranslate(line);
+    outputs.push(result);
+  }
+  outputEl.innerText = outputs.join("\n");
   addHistory("translation", input.split("\n")[0], outputs[0]);
   addRecent("tr-recent-list", input.split("\n")[0], outputs[0]);
 }
+
 function wordByWordTranslate(line){
   const words = normalize(line).replace(/[.?!]/g,"").split(/\s+/);
-  const translated = words.map(w=> (DICTIONARY[w] ? DICTIONARY[w].ur.split(",")[0].trim() : w));
-  return translated.join(" ") + " (approx.)";
+  const known = words.map(w=> DICTIONARY[w] ? DICTIONARY[w].ur.split(",")[0].trim() : null);
+  if(known.every(w=>w===null)){
+    return "⚠ No internet connection — offline dictionary has no entry for this.";
+  }
+  return known.map((w,i)=> w || words[i]).join(" ") + " (offline partial match)";
 }
 
 /* ---------------- SENTENCE TRANSLATOR SCREEN ---------------- */
@@ -268,11 +324,20 @@ function swapSentence(){
   const out = document.getElementById("sen-output");
   const tmp2 = inp.value; inp.value = out.innerText; out.innerText = tmp2;
 }
-function doSentenceTranslate(){
-  const input = document.getElementById("sen-input").value.trim();
+async function doSentenceTranslate(){
+  const inputEl = document.getElementById("sen-input");
+  const outputEl = document.getElementById("sen-output");
+  const input = inputEl.value.trim();
+  if(!input){ showToast("Type a sentence first"); return; }
+  const fromCode = LANG_CODES[document.getElementById("sen-lang-from").textContent] || "en";
+  const toCode = LANG_CODES[document.getElementById("sen-lang-to").textContent] || "ur";
+
+  outputEl.innerText = "Translating...";
   const key = normalize(input).replace(/[.?!]+$/,"");
-  const result = SENTENCE_BANK_EN_UR[key] || wordByWordTranslate(input);
-  document.getElementById("sen-output").innerText = result;
+  let result = (fromCode==="en" && toCode==="ur") ? SENTENCE_BANK_EN_UR[key] : null;
+  if(!result) result = await translateOnline(input, fromCode, toCode);
+  if(!result) result = wordByWordTranslate(input);
+  outputEl.innerText = result;
   addHistory("sentence", input, result);
   addRecent("sen-recent-list", input, result);
 }
