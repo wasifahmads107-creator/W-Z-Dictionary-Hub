@@ -38,10 +38,10 @@
         <span class="tile-title">Translator</span>
         <span class="tile-sub">Language to Language</span>
       </button>
-      <button class="tile tile--purple" onclick="showScreen('sentence')">
-        <span class="tile-icon">🗨️</span>
-        <span class="tile-title">Sentence Translator</span>
-        <span class="tile-sub">Translate Sentences</span>
+      <button class="tile tile--purple" onclick="showScreen('qa')">
+        <span class="tile-icon">❓</span>
+        <span class="tile-title">Q&amp;A Helper</span>
+        <span class="tile-sub">Ask Any Question</span>
       </button>
       <button class="tile tile--orange" onclick="showScreen('grammar-en')">
         <span class="tile-icon">Aa</span>
@@ -160,46 +160,41 @@ How are you?</textarea>
     </nav>
   </section>
 
-  <!-- ================= SENTENCE TRANSLATOR ================= -->
-  <section class="screen" id="screen-sentence" data-theme="purple">
+  <!-- ================= Q&A HELPER ================= -->
+  <section class="screen" id="screen-qa" data-theme="purple">
     <header class="topbar topbar--color">
       <button class="icon-btn" onclick="showScreen('home')">←</button>
-      <h2>Sentence Translator</h2>
+      <h2>Q&amp;A Helper</h2>
       <button class="icon-btn" onclick="showScreen('history')">🕒</button>
     </header>
 
     <div class="content-pad">
-      <label class="field-label">From</label>
-      <button class="lang-pill lang-pill--full" id="sen-lang-from" onclick="cycleLang('sen-lang-from')">🇬🇧 English</button>
-
+      <label class="field-label">Ask a question</label>
       <div class="text-box">
-        <textarea id="sen-input" placeholder="Type a sentence...">Education is the key to success.</textarea>
+        <textarea id="qa-input" placeholder="e.g. What is science?">What is science?</textarea>
         <div class="text-box-actions">
-          <button onclick="document.getElementById('sen-input').value=''">✕</button>
-          <button onclick="speak(document.getElementById('sen-input').value,'en-US')">🎙</button>
-          <button onclick="speak(document.getElementById('sen-input').value,'en-US')">🔊</button>
+          <button onclick="document.getElementById('qa-input').value=''">✕</button>
+          <button onclick="fakeMic('qa-input')">🎙</button>
+          <button onclick="speak(document.getElementById('qa-input').value,'en-US')">🔊</button>
         </div>
       </div>
 
-      <label class="field-label">To</label>
-      <button class="swap-center" onclick="swapSentence()">⇄</button>
-      <button class="lang-pill lang-pill--full" id="sen-lang-to" onclick="cycleLang('sen-lang-to')">🇵🇰 Urdu</button>
-
-      <div class="text-box text-box--result" dir="rtl" id="sen-output-box">
-        <div id="sen-output" class="urdu">تعلیم کامیابی کی کنجی ہے۔</div>
+      <label class="field-label">Answer</label>
+      <div class="text-box text-box--result" id="qa-output-box">
+        <div id="qa-output">The study of nature is called science.</div>
         <div class="text-box-actions">
-          <button onclick="speak(document.getElementById('sen-output').innerText,'ur-PK')">🔊</button>
-          <button onclick="copyText('sen-output')">📋</button>
+          <button onclick="speak(document.getElementById('qa-output').innerText,'en-US')">🔊</button>
+          <button onclick="copyText('qa-output')">📋</button>
         </div>
       </div>
 
-      <button class="btn-primary btn--purple" onclick="doSentenceTranslate()">Translate</button>
+      <button class="btn-primary btn--purple" onclick="askQuestion()">Ask</button>
 
       <div class="section-head">
-        <h3>Recent Translations</h3>
+        <h3>Recent Questions</h3>
         <a href="#" onclick="showScreen('history');return false;">See All</a>
       </div>
-      <div class="list list--rows" id="sen-recent-list"></div>
+      <div class="list list--rows" id="qa-recent-list"></div>
     </div>
 
     <nav class="bottom-nav" data-active-theme="purple">
@@ -307,7 +302,7 @@ How are you?</textarea>
       <div class="tabs">
         <button class="tab active" onclick="filterFav('all',this)">All</button>
         <button class="tab" onclick="filterFav('word',this)">Words</button>
-        <button class="tab" onclick="filterFav('sentence',this)">Sentences</button>
+        <button class="tab" onclick="filterFav('question',this)">Questions</button>
       </div>
       <div class="list list--rows" id="fav-list"></div>
       <p class="empty-hint" id="fav-empty" style="display:none">No favourites yet. Tap the ♡ icon anywhere to save words and sentences here.</p>
@@ -386,7 +381,7 @@ How are you?</textarea>
     <div class="grid-6 grid-6--sheet">
       <button class="tile tile--blue tile--sm" onclick="showScreen('dictionary')">📘<span>Dictionary</span></button>
       <button class="tile tile--green tile--sm" onclick="showScreen('translator')">💬<span>Translator</span></button>
-      <button class="tile tile--purple tile--sm" onclick="showScreen('sentence')">🗨️<span>Sentence</span></button>
+      <button class="tile tile--purple tile--sm" onclick="showScreen('qa')">❓<span>Q&amp;A Helper</span></button>
       <button class="tile tile--orange tile--sm" onclick="showScreen('grammar-en')">Aa<span>Eng. Grammar</span></button>
       <button class="tile tile--teal tile--sm" onclick="showScreen('grammar-ur')">اردو<span>Urdu Grammar</span></button>
       <button class="tile tile--pink tile--sm" onclick="showScreen('favourite')">❤️<span>Favourite</span></button>
