@@ -92,14 +92,23 @@ const PHRASES_EN_UR = {
   "how much is this":"یہ کتنے کا ہے؟"
 };
 
-const SENTENCE_BANK_EN_UR = {
-  "actions speak louder than words":"عمل الفاظ سے زیادہ بولتے ہیں۔",
-  "time is money":"وقت پیسہ ہے۔",
-  "where there is a will there is a way":"جہاں چاہ وہاں راہ۔",
-  "education is the key to success":"تعلیم کامیابی کی کنجی ہے۔",
-  "practice makes a man perfect":"مشق انسان کو کامل بنا دیتی ہے۔",
-  "honesty is the best policy":"ایمانداری بہترین حکمت عملی ہے۔",
-  "health is wealth":"صحت ہی دولت ہے۔"
+const QA_BANK = {
+  "what is science":"The study of nature is called science.",
+  "what is gravity":"Gravity is the force that pulls objects towards each other, and pulls everything on Earth towards the ground.",
+  "what is photosynthesis":"Photosynthesis is the process by which green plants use sunlight to make their own food from water and carbon dioxide.",
+  "what is water":"Water is a clear liquid made of hydrogen and oxygen that is essential for all living things.",
+  "what is gravity force":"Gravity is the natural force that attracts any two objects with mass towards each other.",
+  "what is the capital of pakistan":"Islamabad is the capital of Pakistan.",
+  "what is the capital of france":"Paris is the capital of France.",
+  "who is the father of pakistan":"Muhammad Ali Jinnah is known as the father of the nation of Pakistan.",
+  "what is love":"Love is a deep feeling of affection, care, or strong attachment towards someone or something.",
+  "what is time":"Time is the continuous progress of existence, measured in seconds, minutes, hours, and days.",
+  "what is knowledge":"Knowledge is facts, information, and skills acquired by a person through experience or education.",
+  "what is education":"Education is the process of receiving or giving systematic instruction, especially at a school or university.",
+  "what is mathematics":"Mathematics is the science and study of numbers, quantities, shapes, and their relationships.",
+  "what is history":"History is the study of past events, particularly human affairs.",
+  "who is albert einstein":"Albert Einstein was a physicist famous for developing the theory of relativity.",
+  "what is the sun":"The Sun is the star at the centre of our solar system that gives Earth light and heat."
 };
 
 /* ---------------- GRAMMAR CONTENT ---------------- */
@@ -315,35 +324,58 @@ function wordByWordTranslate(line){
   return known.map((w,i)=> w || words[i]).join(" ") + " (offline partial match)";
 }
 
-/* ---------------- SENTENCE TRANSLATOR SCREEN ---------------- */
-function swapSentence(){
-  const from = document.getElementById("sen-lang-from");
-  const to = document.getElementById("sen-lang-to");
-  const tmp = from.textContent; from.textContent = to.textContent; to.textContent = tmp;
-  const inp = document.getElementById("sen-input");
-  const out = document.getElementById("sen-output");
-  const tmp2 = inp.value; inp.value = out.innerText; out.innerText = tmp2;
+/* ---------------- Q&A HELPER SCREEN ---------------- */
+function extractTopic(question){
+  let q = normalize(question).replace(/[?]+$/,"").trim();
+  q = q.replace(/^(what is|what are|who is|who was|define|meaning of|explain|tell me about)\s+/i,"");
+  q = q.replace(/^(the|a|an)\s+/i,"");
+  return q.trim();
 }
-async function doSentenceTranslate(){
-  const inputEl = document.getElementById("sen-input");
-  const outputEl = document.getElementById("sen-output");
-  const input = inputEl.value.trim();
-  if(!input){ showToast("Type a sentence first"); return; }
-  const fromCode = LANG_CODES[document.getElementById("sen-lang-from").textContent] || "en";
-  const toCode = LANG_CODES[document.getElementById("sen-lang-to").textContent] || "ur";
 
-  outputEl.innerText = "Translating...";
-  const key = normalize(input).replace(/[.?!]+$/,"");
-  let result = (fromCode==="en" && toCode==="ur") ? SENTENCE_BANK_EN_UR[key] : null;
-  if(!result) result = await translateOnline(input, fromCode, toCode);
-  if(!result) result = wordByWordTranslate(input);
-  outputEl.innerText = result;
-  addHistory("sentence", input, result);
-  addRecent("sen-recent-list", input, result);
+/* Live general-knowledge lookup using Wikipedia's free public REST API
+   (no API key needed). Used whenever the question isn't in the small
+   offline QA_BANK. Needs an internet connection. */
+async function fetchWikiAnswer(topic){
+  try{
+    const title = topic.charAt(0).toUpperCase() + topic.slice(1);
+    const res = await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(title)}`);
+    if(!res.ok) return null;
+    const data = await res.json();
+    if(data && data.extract){
+      const firstTwo = data.extract.split(/(?<=[.!?])\s+/).slice(0,2).join(" ");
+      return firstTwo;
+    }
+  }catch(e){
+    return null;
+  }
+  return null;
+}
+
+async function askQuestion(){
+  const inputEl = document.getElementById("qa-input");
+  const outputEl = document.getElementById("qa-output");
+  const question = inputEl.value.trim();
+  if(!question){ showToast("Type a question first"); return; }
+
+  outputEl.innerText = "Thinking...";
+  const key = normalize(question).replace(/[?]+$/,"");
+  let answer = QA_BANK[key];
+
+  if(!answer){
+    const topic = extractTopic(question);
+    answer = await fetchWikiAnswer(topic);
+  }
+  if(!answer){
+    answer = "⚠ No offline answer found and no internet connection to look this up. Try rephrasing, e.g. 'What is science?'";
+  }
+
+  outputEl.innerText = answer;
+  addHistory("question", question, answer);
+  addRecent("qa-recent-list", question, answer);
 }
 
 /* ---------------- RECENT LISTS (in-memory rendering helpers) ---------------- */
-const recentStore = { "tr-recent-list":[], "sen-recent-list":[] };
+const recentStore = { "tr-recent-list":[], "qa-recent-list":[] };
 function addRecent(listId, en, ur){
   recentStore[listId].unshift({en,ur});
   recentStore[listId] = recentStore[listId].slice(0,8);
@@ -511,7 +543,7 @@ document.addEventListener("DOMContentLoaded", ()=>{
   addRecent("tr-recent-list","Thank you","شکریہ");
   addRecent("tr-recent-list","How are you?","آپ کیسے ہیں؟");
   addRecent("tr-recent-list","I love my country","میں اپنے ملک سے پیار کرتا ہوں۔");
-  addRecent("sen-recent-list","Actions speak louder than words.","عمل الفاظ سے زیادہ بولتے ہیں۔");
-  addRecent("sen-recent-list","Time is money.","وقت پیسہ ہے۔");
-  addRecent("sen-recent-list","Where there is a will, there is a way.","جہاں چاہ وہاں راہ۔");
+  addRecent("qa-recent-list","What is science?","The study of nature is called science.");
+  addRecent("qa-recent-list","What is gravity?","Gravity is the force that pulls objects towards each other, and pulls everything on Earth towards the ground.");
+  addRecent("qa-recent-list","What is knowledge?","Knowledge is facts, information, and skills acquired by a person through experience or education.");
 });
