@@ -317,6 +317,13 @@ body{
 }
 .toast.show{opacity:1;transform:translate(-50%,0);}
 
+/* ---------------- KNOWLEDGE ASSISTANT (Q&A) ANSWER FORMATTING ----------------
+   Scoped only to #qa-output so no other screen's appearance is affected. */
+#qa-output h4{margin:14px 0 6px;font-size:13.5px;color:var(--blue);}
+#qa-output .kb-title{font-size:18px;font-weight:700;color:var(--ink);display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:4px;}
+#qa-output .kb-subject{font-size:11px;font-weight:400;color:var(--ink-soft);background:var(--line);padding:2px 8px;border-radius:10px;}
+#qa-output .chip{cursor:pointer;}
+
 /* ---------- DARK MODE ---------- */
 body.dark{background:#10131b;}
 body.dark .phone{background:#151a24;}
