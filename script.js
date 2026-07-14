@@ -483,28 +483,149 @@ function renderKnowledgeAnswer(entry, focusIntent){
   return html;
 }
 
-/* ---------------- GRAMMAR CONTENT ---------------- */
+/* ---------------- GRAMMAR CONTENT ----------------
+   English Grammar topics: ALL fields are in English only.
+   Urdu Grammar topics (below): ALL fields are in Urdu only. */
 const GRAMMAR_EN = {
-  "Tenses":"English has 12 tenses built from Present, Past and Future, each in Simple, Continuous, Perfect and Perfect Continuous forms. Example: 'She writes' (Present Simple) vs 'She has been writing' (Present Perfect Continuous).",
-  "Parts of Speech":"There are 8 parts of speech: Noun, Pronoun, Verb, Adjective, Adverb, Preposition, Conjunction and Interjection. Every English word belongs to at least one of these.",
-  "Articles":"'A' and 'an' are indefinite articles used for non-specific nouns, while 'the' is the definite article used for specific nouns. Example: 'A book' vs 'The book on the table'.",
-  "Prepositions":"Prepositions show the relationship between a noun/pronoun and other words in a sentence, e.g. in, on, at, under, between. Example: 'The cat is under the table.'",
-  "Conjunctions":"Conjunctions join words, phrases, or clauses. Common ones are and, but, or, because, although. Example: 'I was tired, but I kept working.'",
-  "Active & Passive":"In the active voice the subject performs the action ('He wrote a letter'); in the passive voice the subject receives the action ('A letter was written by him').",
-  "Direct & Indirect":"Direct speech quotes the exact words spoken ('She said, \"I am happy.\"'), while indirect speech reports it ('She said that she was happy').",
-  "Voice":"'Voice' in grammar refers to the form of a verb that shows whether the subject performs (active) or receives (passive) the action.",
-  "Narration":"Narration is the reporting of someone else's words, changing tense, pronouns and time expressions when moving from direct to indirect speech."
+  "Tenses": {
+    definition:"Tense shows the time of an action — whether it happens in the present, past, or future.",
+    rules:["English has 3 main time frames: Present, Past, and Future.","Each time frame has 4 aspects: Simple, Continuous, Perfect, and Perfect Continuous — making 12 tenses in total."],
+    structure:"Subject + Verb (form changes with tense) + Object",
+    examples:["Present Simple: She writes a letter.","Present Continuous: She is writing a letter.","Past Simple: She wrote a letter.","Future Simple: She will write a letter."],
+    exceptions:["Verbs like 'know', 'love', 'believe' are not normally used in continuous form — say 'I know', not 'I am knowing'."],
+    commonMistakes:["Using 'has' with plural subjects — wrong: 'They has gone'; correct: 'They have gone'.","Mixing past and present tense in the same sentence without reason."],
+    mcqs:[{q:"Which sentence is in Present Continuous tense?", options:["She writes daily.","She is writing now.","She wrote yesterday.","She will write tomorrow."], answer:"She is writing now."}],
+    summary:"Tense tells us when an action happens, and English has 12 tenses formed from 3 time frames × 4 aspects."
+  },
+  "Parts of Speech": {
+    definition:"Parts of speech are the categories into which words are classified based on their function in a sentence.",
+    rules:["There are 8 parts of speech: Noun, Pronoun, Verb, Adjective, Adverb, Preposition, Conjunction, and Interjection."],
+    examples:["Noun: Karachi","Pronoun: she","Verb: run","Adjective: beautiful","Adverb: quickly","Preposition: on","Conjunction: and","Interjection: Wow!"],
+    commonMistakes:["Confusing adjectives and adverbs — e.g. 'She sings beautiful' instead of 'She sings beautifully.'"],
+    mcqs:[{q:"Which part of speech is the word 'quickly'?", options:["Noun","Verb","Adverb","Preposition"], answer:"Adverb"}],
+    summary:"Every English word falls into one of 8 parts of speech based on its role in a sentence."
+  },
+  "Articles": {
+    definition:"Articles are words placed before nouns to show whether we are referring to something specific or general.",
+    rules:["'A' and 'an' are indefinite articles, used with singular, non-specific nouns.","'The' is the definite article, used with specific nouns (singular or plural).","Use 'an' before a vowel sound, and 'a' before a consonant sound."],
+    examples:["A book (any book)","An apple (starts with a vowel sound)","The book on the table (a specific book)"],
+    exceptions:["'An hour' — the 'h' is silent, so it starts with a vowel sound.","'A university' — starts with a consonant sound 'yu', so 'a' is used, not 'an'."],
+    commonMistakes:["Saying 'an university' instead of 'a university'."],
+    mcqs:[{q:"Which is correct?", options:["A hour","An hour","Hour an","None"], answer:"An hour"}],
+    summary:"Articles (a, an, the) show whether a noun is general (indefinite) or specific (definite)."
+  },
+  "Prepositions": {
+    definition:"A preposition is a word that shows the relationship of a noun or pronoun to other words in a sentence, often relating to place, time, or direction.",
+    rules:["Common prepositions: in, on, at, under, between, before, after, behind, near."],
+    examples:["The book is on the table.","We will meet at 5 pm.","She was born in 2001."],
+    commonMistakes:["Confusing 'in' and 'on' for time — use 'in' for months/years ('in July'), 'on' for specific days/dates ('on Monday')."],
+    mcqs:[{q:"Which preposition fits: 'The meeting is ___ Monday'?", options:["in","on","at","between"], answer:"on"}],
+    summary:"Prepositions link nouns/pronouns to the rest of the sentence, usually showing place, time or direction."
+  },
+  "Conjunctions": {
+    definition:"A conjunction is a word used to connect words, phrases, or clauses within a sentence.",
+    rules:["Coordinating conjunctions (FANBOYS): For, And, Nor, But, Or, Yet, So — join equal parts.","Subordinating conjunctions (because, although, if, since) join a main clause to a dependent clause."],
+    examples:["I was tired, but I kept working. (coordinating)","I stayed home because it was raining. (subordinating)"],
+    commonMistakes:["Overusing 'and'/'but' to start every sentence in formal writing."],
+    mcqs:[{q:"Which is a coordinating conjunction?", options:["Although","Because","But","Since"], answer:"But"}],
+    summary:"Conjunctions join words or clauses together, and are either coordinating or subordinating."
+  },
+  "Active & Passive": {
+    definition:"Voice shows whether the subject of a sentence performs the action (active) or receives the action (passive).",
+    rules:["Active: Subject + Verb + Object — 'He wrote a letter.'","Passive: Object + is/was + Past Participle + (by Subject) — 'A letter was written by him.'"],
+    examples:["Active: The chef cooked the meal.","Passive: The meal was cooked by the chef."],
+    commonMistakes:["Forgetting to change the verb to its past participle form in passive voice."],
+    mcqs:[{q:"What is the passive form of 'She reads the book'?", options:["The book reads her.","The book is read by her.","She is read the book.","The book was reading."], answer:"The book is read by her."}],
+    summary:"Active voice focuses on the doer of the action; passive voice focuses on the receiver of the action."
+  },
+  "Direct & Indirect": {
+    definition:"Direct speech reports the exact words spoken, while indirect (reported) speech conveys the same meaning without quoting the exact words.",
+    rules:["Direct speech uses quotation marks: She said, \"I am happy.\"","Indirect speech usually shifts tense back and changes pronouns: She said that she was happy."],
+    examples:["Direct: He said, \"I will come tomorrow.\"","Indirect: He said that he would come the next day."],
+    commonMistakes:["Forgetting to shift the tense backward when converting to indirect speech."],
+    mcqs:[{q:"Convert to indirect speech: She said, \"I am tired.\"", options:["She said that she is tired.","She said that she was tired.","She said I am tired.","She say she was tired."], answer:"She said that she was tired."}],
+    summary:"Direct speech quotes exact words; indirect speech reports them with tense and pronoun shifts."
+  },
+  "Voice": {
+    definition:"'Voice' in grammar refers to the form of a verb that shows whether the subject performs or receives the action described.",
+    rules:["Active voice: subject performs the action.","Passive voice: subject receives the action."],
+    examples:["Active: The cat chased the mouse.","Passive: The mouse was chased by the cat."],
+    summary:"Voice indicates whether the subject acts (active) or is acted upon (passive)."
+  },
+  "Narration": {
+    definition:"Narration is the reporting of someone else's words, either directly (exact words) or indirectly (reported speech).",
+    rules:["When changing narration from direct to indirect: tense usually moves one step back, pronouns change to match the speaker, and time/place words change (e.g. 'today' → 'that day')."],
+    examples:["Direct: She said, \"I am going now.\"","Indirect: She said that she was going then."],
+    commonMistakes:["Not changing time expressions like 'tomorrow' to 'the next day' in indirect narration."],
+    summary:"Narration involves reporting speech directly (exact quote) or indirectly (reported form with shifted tense/pronouns)."
+  },
+  "Present Simple Tense": {
+    definition:"The Present Simple tense describes habits, routines, permanent facts, and general truths.",
+    structure:"Subject + Verb (base form; add -s/-es for he/she/it) + Object",
+    examples:["She walks to school every day.","Water boils at 100°C.","He plays cricket on weekends."],
+    commonMistakes:["Forgetting the -s for third person singular — wrong: 'He go'; correct: 'He goes'."],
+    summary:"Present Simple is used for habits, routines, and general facts."
+  },
+  "Past Continuous Tense": {
+    definition:"The Past Continuous tense describes an action that was in progress at a specific moment in the past.",
+    structure:"Subject + was/were + Verb-ing + Object",
+    examples:["I was reading a book at 8 pm yesterday.","They were playing football when it started to rain."],
+    commonMistakes:["Using 'was' with plural subjects — wrong: 'They was playing'; correct: 'They were playing'."],
+    summary:"Past Continuous shows an action that was ongoing at a particular time in the past."
+  }
 };
 
 const GRAMMAR_UR = {
-  "اسم":"اسم وہ لفظ ہے جو کسی شخص، جگہ یا چیز کا نام ہو، جیسے کراچی، کتاب، احمد۔",
-  "صفت":"صفت وہ لفظ ہے جو اسم کی خوبی یا کیفیت ظاہر کرے، جیسے اچھا، بڑا، خوبصورت۔",
-  "فعل":"فعل وہ لفظ ہے جس سے کسی کام کا کرنا یا ہونا معلوم ہو، جیسے کھانا، جانا، پڑھنا۔",
-  "ضمائر":"ضمیر وہ لفظ ہے جو اسم کی جگہ استعمال ہو، جیسے میں، تم، وہ، ہم۔",
-  "حروف":"حروف وہ الفاظ ہیں جو دو اسموں یا جملوں کو آپس میں جوڑتے ہیں، جیسے اور، یا، لیکن۔",
-  "اسم اشارہ":"اسم اشارہ وہ اسم ہے جو کسی چیز کی طرف اشارہ کرے، جیسے یہ، وہ۔",
-  "تراکیب":"تراکیب دو یا زیادہ الفاظ کے مجموعے سے بنتی ہیں جو مل کر ایک نیا معنی دیتے ہیں، جیسے 'میز پر'۔",
-  "املا و قواعد":"املا حروف کی درست ترتیب کو کہتے ہیں جبکہ قواعد زبان کے قوانین اور اصولوں کا مجموعہ ہیں۔"
+  "اسم": {
+    definition:"اسم وہ لفظ ہے جو کسی شخص، جگہ، جانور یا چیز کے نام کو ظاہر کرے۔",
+    types:["اسم ذات: جیسے کتاب، میز","اسم خاص: جیسے کراچی، احمد","اسم صفت: خوبی ظاہر کرنے والا اسم","اسم جمع: جیسے قوم، ٹیم"],
+    examples:["احمد اسکول جاتا ہے۔","کتاب میز پر رکھی ہے۔"],
+    keyPoints:["اسم جملے کا بنیادی حصہ ہوتا ہے۔","اسم کی کئی اقسام ہوتی ہیں۔"],
+    summary:"اسم وہ لفظ ہے جو کسی شخص، جگہ یا چیز کا نام بتاتا ہے، اور اس کی مختلف اقسام ہوتی ہیں۔"
+  },
+  "صفت": {
+    definition:"صفت وہ لفظ ہے جو اسم کی خوبی، حالت یا مقدار ظاہر کرے۔",
+    types:["صفت ذاتی: جیسے اچھا، برا","صفت مقدار: جیسے تھوڑا، زیادہ","صفت عددی: جیسے ایک، دو"],
+    examples:["یہ ایک اچھا لڑکا ہے۔","اس کے پاس زیادہ کتابیں ہیں۔"],
+    keyPoints:["صفت ہمیشہ اسم سے پہلے یا بعد میں آتی ہے۔"],
+    summary:"صفت اسم کی خوبی یا حالت بیان کرنے والا لفظ ہے۔"
+  },
+  "فعل": {
+    definition:"فعل وہ لفظ ہے جس سے کسی کام کا کرنا یا ہونا معلوم ہو۔",
+    types:["فعل لازم: جیسے سونا، ہنسنا","فعل متعدی: جیسے کھانا، پڑھنا","فعل ناقص: مددگار افعال جیسے ہے، تھا"],
+    examples:["وہ کتاب پڑھتا ہے۔","بچہ سو رہا ہے۔"],
+    commonMistakes:["فعل کا صحیح زمانہ (tense) استعمال نہ کرنا ایک عام غلطی ہے۔"],
+    summary:"فعل کسی کام کے کرنے یا ہونے کو ظاہر کرتا ہے۔"
+  },
+  "ضمائر": {
+    definition:"ضمیر وہ لفظ ہے جو اسم کی جگہ استعمال ہوتا ہے تاکہ اسم کو بار بار نہ دہرایا جائے۔",
+    types:["ضمیر شخصی: میں، تم، وہ","ضمیر اشارہ: یہ، وہ","ضمیر استفہامیہ: کون، کیا"],
+    examples:["وہ اسکول گیا۔","یہ میری کتاب ہے۔"],
+    summary:"ضمیر اسم کی جگہ استعمال ہونے والا لفظ ہے۔"
+  },
+  "حروف": {
+    definition:"حروف وہ الفاظ ہیں جو دو اسموں، جملوں یا فقروں کو آپس میں جوڑتے ہیں۔",
+    types:["حرف عطف: اور، یا","حرف جار: سے، کو، پر"],
+    examples:["علی اور احمد اسکول گئے۔","کتاب میز پر ہے۔"],
+    summary:"حروف الفاظ یا جملوں کو آپس میں جوڑنے کا کام کرتے ہیں۔"
+  },
+  "اسم اشارہ": {
+    definition:"اسم اشارہ وہ اسم ہے جو کسی چیز، شخص یا جگہ کی طرف اشارہ کرے۔",
+    types:["اسم اشارہ قریب: یہ","اسم اشارہ بعید: وہ"],
+    examples:["یہ میرا گھر ہے۔","وہ اس کی گاڑی ہے۔"],
+    summary:"اسم اشارہ کسی چیز کی طرف اشارہ کرنے کے لیے استعمال ہوتا ہے۔"
+  },
+  "تراکیب": {
+    definition:"تراکیب دو یا زیادہ الفاظ کا مجموعہ ہیں جو مل کر ایک نیا مفہوم پیدا کرتے ہیں۔",
+    examples:["میز پر — جگہ کی نشاندہی","دل سے — گہرے جذبے کا اظہار"],
+    summary:"تراکیب الفاظ کے مجموعے سے بنتی ہیں اور نیا مفہوم دیتی ہیں۔"
+  },
+  "املا و قواعد": {
+    definition:"املا حروف کی درست ترتیب کو کہتے ہیں، جبکہ قواعد زبان کے قوانین اور اصولوں کا مجموعہ ہیں۔",
+    keyPoints:["درست املا لکھنا پڑھنے والے کے لیے وضاحت پیدا کرتا ہے۔","قواعد کی پیروی سے جملے صحیح اور بامعنی بنتے ہیں۔"],
+    commonMistakes:["ہمزہ اور مد کے استعمال میں غلطی عام ہے، جیسے 'آنا' کو 'انا' لکھنا۔"],
+    summary:"املا اور قواعد زبان کو درست اور صاف انداز میں لکھنے میں مدد دیتے ہیں۔"
+  }
 };
 
 /* ---------------- APP STATE (in-memory only) ---------------- */
@@ -783,16 +904,48 @@ function renderRecent(listId){
 }
 
 /* ---------------- GRAMMAR TOPICS ---------------- */
+/* Renders a structured grammar entry. Headers are shown in English for
+   English Grammar topics, and in Urdu for Urdu Grammar topics — content
+   itself never mixes languages. Reuses existing global CSS classes only
+   (h4, example-item, chip) so no new styling/design changes are needed. */
+function renderGrammarAnswer(entry, lang){
+  const L = lang==="ur" ? {
+    definition:"تعریف", rules:"قواعد", structure:"ساخت", types:"اقسام", examples:"مثالیں",
+    exceptions:"رعایتیں", commonMistakes:"عام غلطیاں", mcq:"مشق (MCQ)", keyPoints:"اہم نکات", summary:"خلاصہ"
+  } : {
+    definition:"Definition", rules:"Rules", structure:"Structure", types:"Types", examples:"Examples",
+    exceptions:"Exceptions", commonMistakes:"Common Mistakes", mcq:"Practice MCQ", keyPoints:"Key Points", summary:"Summary"
+  };
+  const wrap = lang==="ur" ? ' class="ur"' : '';
+  let html = `<div${wrap}>`;
+  if(entry.definition) html += `<h4>${L.definition}</h4><p>${entry.definition}</p>`;
+  if(entry.rules) html += `<h4>${L.rules}</h4>` + entry.rules.map(r=>`<div class="example-item">• ${r}</div>`).join("");
+  if(entry.structure) html += `<h4>${L.structure}</h4><p>${entry.structure}</p>`;
+  if(entry.types) html += `<h4>${L.types}</h4>` + entry.types.map(t=>`<div class="example-item">• ${t}</div>`).join("");
+  if(entry.examples) html += `<h4>${L.examples}</h4>` + entry.examples.map(e=>`<div class="example-item">• ${e}</div>`).join("");
+  if(entry.exceptions) html += `<h4>${L.exceptions}</h4>` + entry.exceptions.map(e=>`<div class="example-item">• ${e}</div>`).join("");
+  if(entry.commonMistakes) html += `<h4>${L.commonMistakes}</h4>` + entry.commonMistakes.map(e=>`<div class="example-item">• ${e}</div>`).join("");
+  if(entry.keyPoints) html += `<h4>${L.keyPoints}</h4>` + entry.keyPoints.map(e=>`<div class="example-item">• ${e}</div>`).join("");
+  if(entry.mcqs) html += `<h4>${L.mcq}</h4>` + entry.mcqs.map(mcq=>`<div class="example-item">${mcq.q}<br>${mcq.options.map(o=>`<span class="chip" style="cursor:default;${o===mcq.answer?'font-weight:700':''}">${o}${o===mcq.answer?' ✓':''}</span>`).join(" ")}</div>`).join("");
+  if(entry.summary) html += `<h4>${L.summary}</h4><p>${entry.summary}</p>`;
+  html += `</div>`;
+  return html;
+}
+
 function openGrammarTopic(lang, topic){
   const title = document.getElementById("topic-title");
   const body = document.getElementById("topic-body");
-  title.textContent = topic;
-  if(lang==="en"){
-    body.innerHTML = `<p>${GRAMMAR_EN[topic] || "Content coming soon."}</p>`;
-    addHistory("grammar", topic, "English Grammar");
+  const cleanTopic = (topic||"").trim();
+  title.textContent = cleanTopic;
+  const bank = lang==="en" ? GRAMMAR_EN : GRAMMAR_UR;
+  const entry = bank[cleanTopic];
+  if(entry){
+    body.innerHTML = renderGrammarAnswer(entry, lang);
+    addHistory("grammar", cleanTopic, lang==="en" ? "English Grammar" : "اردو گرامر");
+  } else if(lang==="en"){
+    body.innerHTML = `<p>Content coming soon for this topic.</p>`;
   } else {
-    body.innerHTML = `<p class="ur">${GRAMMAR_UR[topic] || "جلد شامل کیا جائے گا۔"}</p>`;
-    addHistory("grammar", topic, "اردو گرامر");
+    body.innerHTML = `<p class="ur">اس موضوع کا مواد جلد شامل کیا جائے گا۔</p>`;
   }
   document.getElementById("topic-overlay").classList.add("open");
 }
